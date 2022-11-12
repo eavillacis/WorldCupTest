@@ -1,0 +1,24 @@
+.paginator {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.paginator button {
+  color: #fff;
+  background-color: #284af4;
+  padding: 15px 20px;
+  border-radius: 5px;
+  text-align: center;
+  border: inherit;
+  max-width: 95px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.paginator button:disabled {
+  cursor: no-drop;
+  background-color: #ccc;
+  color: #000;
+  opacity: 0.5;
+}

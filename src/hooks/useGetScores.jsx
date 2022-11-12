@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 async function getMatches() {
   const matchesResponse = await fetch(
     "https://63223e77fd698dfa2909708c.mockapi.io/api/matches"
@@ -18,38 +20,55 @@ const getTeams = (matches) => {
   return teamsArr;
 };
 
-export const useGetScores = async () => {
-  const matches = await getMatches();
-  console.log(matches);
-  const resultsArr = [];
-  const teams = getTeams(matches);
-  for (let i = 0; i < teams.length; i++) {
-    let wins = 0;
-    let ties = 0;
-    for (let j = 0; j < matches.length; j++) {
-      if (matches[j].home === teams[i]) {
-        if (matches[j].homeScore > matches[j].visitScore) {
-          wins++;
-        } else if (matches[j].homeScore === matches[j].visitScore) {
-          ties++;
-        }
-      }
-      if (matches[j].visit === teams[i]) {
-        if (matches[j].visitScore > matches[j].homeScore) {
-          wins++;
-        } else if (matches[j].homeScore === matches[j].visitScore) {
-          ties++;
-        }
-      }
-    }
+export const useGetScores = () => {
+  const [results, setResults] = useState({});
+  
+  useEffect(() => {
+    const getScores = async () => {
+      try {
+        const resultsArr = [];
+        const matches = await getMatches();        
+        const teams = getTeams(matches);
 
-    const score = {
-      team: teams[i],
-      score: wins * 3 + ties * 1
+        for (let i = 0; i < teams.length; i++) {
+          let wins = 0;
+          let ties = 0;
+          for (let j = 0; j < matches.length; j++) {
+            if (matches[j].home === teams[i]) {
+              if (matches[j].homeScore > matches[j].visitScore) {
+                wins++;
+              } else if (matches[j].homeScore === matches[j].visitScore) {
+                ties++;
+              }
+            }
+            if (matches[j].visit === teams[i]) {
+              if (matches[j].visitScore > matches[j].homeScore) {
+                wins++;
+              } else if (matches[j].homeScore === matches[j].visitScore) {
+                ties++;
+              }
+            }
+          }
+
+          const score = {
+            team: teams[i],
+            score: wins * 3 + ties * 1,
+          };
+          
+          resultsArr.push(score);
+          wins = 0;
+          ties = 0;
+        }
+
+        setResults(resultsArr);
+
+      } catch (error) {
+        console.log(error);
+      }
     };
-    resultsArr.push(score);
-    wins = 0;
-    ties = 0;
-  }
-  return resultsArr;
+
+    getScores();
+  }, []);
+
+  return results;
 };
